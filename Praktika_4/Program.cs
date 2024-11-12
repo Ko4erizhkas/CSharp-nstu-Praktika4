@@ -48,6 +48,22 @@
             }
         }
     }
+    class Circle
+    {
+        public float X { get; set; }
+        public float Y { get; set; }
+        public float Radius { get; set; }
+        public Circle(float x, float y)
+        {
+            this.X = x;
+            this.Y = y;
+        }
+        public Circle()
+        {
+            this.X = 0;
+            this.Y = 0;
+        }
+    }
     internal class Program
     {
         static void Main(string[] args)
