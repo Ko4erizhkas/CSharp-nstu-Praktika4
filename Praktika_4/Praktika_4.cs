@@ -1,5 +1,12 @@
-﻿namespace Praktika_4
+﻿using System.Diagnostics.Contracts;
+using System.Net.Http.Headers;
+
+namespace Praktika_4
 {
+    interface DebugPrinter
+    {
+        void PrintInfo();
+    }
     class Task1
     {
         public void Task_1()
@@ -48,20 +55,69 @@
             }
         }
     }
-    class Circle
+    class Circle : DebugPrinter
     {
-        public float X { get; set; }
-        public float Y { get; set; }
-        public float Radius { get; set; }
-        public Circle(float x, float y)
+        private double radius;
+        private double _centerX;
+        private double _centerY;
+        public double CenterX
         {
-            this.X = x;
-            this.Y = y;
+            get { return _centerX; }
+            set { _centerX = value; }
         }
-        public Circle()
+        public double CenterY
         {
-            this.X = 0;
-            this.Y = 0;
+            get { return _centerY; }
+            set { _centerY = value; }
+        }
+        public double Radius
+        {
+            get { return radius; }
+            set
+            {
+                if (value <= 0)
+                {
+                    throw new ArgumentException("Радиус должен быть больше нуля!");
+                }
+                radius = value;
+            }
+        }
+        public Circle(double centerX, double centerY, double raduis)
+        {
+            CenterX = centerX;
+            CenterY = centerY;
+            Radius = raduis;
+        }
+        public Circle(double x1, double x2, double y1, double y2)
+        {
+            CenterX = (x1 + x2) / 2;
+            CenterY = (y1 + y2) / 2;
+            Radius = Math.Sqrt(Math.Pow (x2 - x1, 2) + Math.Pow (y2 - y1,2)) / 2;
+        }
+        public double GetArea()
+        {
+            return Math.PI * Math.Pow(Radius, 2);
+        }
+        public void PrintInfo()
+        {
+            Console.WriteLine(_centerX);
+            Console.WriteLine(_centerY);
+            Console.WriteLine(radius);
+            Console.WriteLine(GetArea());
+        }
+    }
+    class Task4
+    {
+        List<Circle> circles = new List<Circle>();
+
+        public void Task4_1()
+        {
+            circles.Add(new Circle(5, 2, 65));
+            circles.Add(new Circle(7, 4, 5.3));
+            circles.Add(new Circle(5, 7, 5.3));
+            circles.Add(new Circle(1, 2, 6.5));
+            circles.Add(new Circle(12, 8, 65));
+            circles.Add(new Circle(9, 4.5, 6.55));
         }
     }
     internal class Praktika_4
@@ -69,7 +125,9 @@
         static void Main(string[] args)
         {
             Task1 task1 = new Task1();
-            task1.Task_1();
+            Circle circle = new Circle(2.213,4.12312,3.3246,6.43296785);
+            circle.PrintInfo();
+            //task1.Task_1();
         }
     }
 }
