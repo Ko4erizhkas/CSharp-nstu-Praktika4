@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.Contracts;
 using System.Net.Http.Headers;
+using System.Runtime.ExceptionServices;
 
 namespace Praktika_4
 {
@@ -105,19 +106,79 @@ namespace Praktika_4
             Console.WriteLine(radius);
             Console.WriteLine(GetArea());
         }
+        public bool CenterOnLine(double k, double b)
+        {
+            return Math.Abs(CenterY - (k * CenterX + b)) < 1e-9;
+        }
     }
-    class Task4
+    class Task4 : DebugPrinter
     {
-        List<Circle> circles = new List<Circle>();
+        //List<Circle> circles = new List<Circle>();
 
+        // Генерируем n классов Circle со случайными параметрами типа Double
+        public static List<Circle> GenerateClassesCircle(int n)
+        {
+            List<Circle> circles = new List<Circle>();
+
+            var rand = new Random();
+            for (int i = 0; i <= n; i++)
+            {
+                circles.Add(new Circle(rand.NextDouble(), rand.NextDouble(), rand.NextDouble()));
+            }
+            return circles;
+        }
         public void Task4_1()
         {
-            circles.Add(new Circle(5, 2, 65));
-            circles.Add(new Circle(7, 4, 5.3));
-            circles.Add(new Circle(5, 7, 5.3));
-            circles.Add(new Circle(1, 2, 6.5));
-            circles.Add(new Circle(12, 8, 65));
-            circles.Add(new Circle(9, 4.5, 6.55));
+            var circles = GenerateClassesCircle(100);
+            var CircleGroupByRadius = circles.GroupBy(c => c.Radius);
+            foreach (var group in CircleGroupByRadius)
+            {
+                Console.WriteLine($"Radius: {group.Key}");
+                foreach (var c in group)
+                {
+                    Console.WriteLine($" {c.Radius}");
+                }
+            }
+
+        }
+        public void Task4_2()
+        {
+            Console.WriteLine("Формирование запроса: Центры окружностей которые лежат на заданной прямой");
+            Console.WriteLine("Задаётся прямая вида y = kx + b");
+
+            Console.Write("Введите угловой коэффицент k: ");
+            double k = Convert.ToDouble(Console.ReadLine());
+
+            Console.Write("Введите коэффицент b: ");
+            double b = Convert.ToDouble(Console.ReadLine());
+
+            List<Circle> circles = GenerateClassesCircle(100);
+            var CircleOnLine = circles.Where(c => c.CenterOnLine(k,b)).ToList();
+            if (CircleOnLine.Any())
+            {
+                Console.WriteLine("Найденые окружности: ");
+                foreach (var circle in CircleOnLine)
+                {
+                    Console.WriteLine($"Центр: {circle.CenterX}, {circle.CenterY}, Радиус: {circle.Radius}");
+                }
+            }
+            else 
+            {
+                Console.WriteLine("Окружности не найдены.");
+            }
+        }
+        public void PrintInfo()
+        {
+            int n = 0;
+            var circles = GenerateClassesCircle(100);
+            foreach (var i in circles)
+            {
+                Console.WriteLine("------------------------");
+                Console.WriteLine(i.CenterX);
+                Console.WriteLine(i.CenterY);
+                Console.WriteLine(i.Radius);
+            }
+            Console.WriteLine("------------------------");
         }
     }
     internal class Praktika_4
@@ -125,9 +186,12 @@ namespace Praktika_4
         static void Main(string[] args)
         {
             Task1 task1 = new Task1();
-            Circle circle = new Circle(2.213,4.12312,3.3246,6.43296785);
-            circle.PrintInfo();
+            Task4 task4 = new Task4();
+            //circle.PrintInfo();
             //task1.Task_1();
+            //task4.GenerateClassesCircle(100);
+            //task4.Task4_1();
+            task4.Task4_2();
         }
     }
 }
