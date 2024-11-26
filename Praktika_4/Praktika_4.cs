@@ -95,7 +95,7 @@ namespace Praktika_4
             CenterY = (y1 + y2) / 2;
             Radius = Math.Sqrt(Math.Pow (x2 - x1, 2) + Math.Pow (y2 - y1,2)) / 2;
         }
-        public double GetArea()
+        public double GetArea(double Radius)
         {
             return Math.PI * Math.Pow(Radius, 2);
         }
@@ -104,7 +104,7 @@ namespace Praktika_4
             Console.WriteLine(_centerX);
             Console.WriteLine(_centerY);
             Console.WriteLine(radius);
-            Console.WriteLine(GetArea());
+            Console.WriteLine(GetArea(radius));
         }
         public bool CenterOnLine(double k, double b)
         {
@@ -141,6 +141,7 @@ namespace Praktika_4
             }
 
         }
+        // Сделать поиск коэффицентов прямой!
         public void Task4_2()
         {
             Console.WriteLine("Формирование запроса: Центры окружностей которые лежат на заданной прямой");
@@ -169,7 +170,6 @@ namespace Praktika_4
         }
         public void PrintInfo()
         {
-            int n = 0;
             var circles = GenerateClassesCircle(100);
             foreach (var i in circles)
             {
@@ -179,6 +179,60 @@ namespace Praktika_4
                 Console.WriteLine(i.Radius);
             }
             Console.WriteLine("------------------------");
+        }
+        public void Task4_3()
+        {
+            var circles = GenerateClassesCircle(100);
+            List<double> circ = new List<double>();
+
+            foreach (var c in circles)
+            {
+                circ.Add(c.GetArea(c.Radius));
+            }
+            Console.WriteLine($"Наибольший периметр окружности -> {circ.Max()}");
+            Console.WriteLine($"Наименьший периметр окружности -> {circ.Min()}");
+        }
+        public void Task4_4()
+        {
+            var circles = GenerateClassesCircle(100);
+            int rad = 0;
+            Console.WriteLine("Поиск окружности по заданному радиусу.");
+            Console.Write("Задайте радиус окружности: ");
+            rad = Convert.ToInt32(Console.ReadLine());
+            
+            if (circles.Any())
+            {
+                foreach (var c in circles)
+                {
+                    if (c.Radius == rad) 
+                    {
+                        rad++;
+                    }
+                }
+            }
+            Console.WriteLine($"Найдено {rad} окружностей");
+        }
+        public void Task4_5()
+        {
+            var circles = GenerateClassesCircle(5);
+            Console.WriteLine($"Координаты центра -> X:{circles[0].CenterX}, Y:{circles[0].CenterY}");
+            Console.WriteLine($"Радиус: {circles[0].Radius}");
+        }
+        public void Task4_6()
+        {
+            
+        }
+        public void Task4_7()
+        {
+            var circles = GenerateClassesCircle(20);
+            var SortUpCircles = from c in circles
+                              orderby c.Radius
+                              select c;
+            Console.WriteLine("Сортировка радиусов окружности:");
+            foreach (var s in SortUpCircles)
+            {
+                Console.WriteLine(s.Radius);
+            }
         }
     }
     internal class Praktika_4
@@ -191,7 +245,7 @@ namespace Praktika_4
             //task1.Task_1();
             //task4.GenerateClassesCircle(100);
             //task4.Task4_1();
-            task4.Task4_2();
+            task4.Task4_6();
         }
     }
 }
