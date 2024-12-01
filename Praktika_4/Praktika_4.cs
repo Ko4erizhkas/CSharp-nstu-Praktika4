@@ -300,11 +300,15 @@ namespace Praktika_4
         {
             Task1 task1 = new Task1();
             Task4 task4 = new Task4();
-            //circle.PrintInfo();
+            //Раскоментировать для проверки работоспособности.
             //task1.Task_1();
-            //task4.GenerateClassesCircle(10000);
             //task4.Task4_1();
-            task4.Task4_7();
+            //task4.Task4_2();
+            //task4.Task4_3();
+            //task4.Task4_4();
+            //task4.Task4_5();
+            //task4.Task4_6();
+            //task4.Task4_7();
         }
     }
 }
