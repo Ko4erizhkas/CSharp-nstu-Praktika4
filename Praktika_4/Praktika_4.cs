@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.Contracts;
 using System.Net.Http.Headers;
 using System.Runtime.ExceptionServices;
+using System.Security.Cryptography;
 
 namespace Praktika_4
 {
@@ -116,14 +117,17 @@ namespace Praktika_4
         //List<Circle> circles = new List<Circle>();
 
         // Генерируем n классов Circle со случайными параметрами типа Double
-        public static List<Circle> GenerateClassesCircle(int n)
+        public List<Circle> GenerateClassesCircle(int n)
         {
             List<Circle> circles = new List<Circle>();
 
             var rand = new Random();
             for (int i = 0; i <= n; i++)
             {
-                circles.Add(new Circle(rand.NextDouble(), rand.NextDouble(), rand.NextDouble()));
+                int x = rand.Next();
+                int y = rand.Next();
+                int radius = rand.Next();
+                circles.Add(new Circle(x, y, radius));
             }
             return circles;
         }
@@ -131,42 +135,68 @@ namespace Praktika_4
         {
             var circles = GenerateClassesCircle(100);
             var CircleGroupByRadius = circles.GroupBy(c => c.Radius);
+            Console.WriteLine("Сгруппированные окружности по радиусу:");
             foreach (var group in CircleGroupByRadius)
             {
                 Console.WriteLine($"Radius: {group.Key}");
-                foreach (var c in group)
-                {
-                    Console.WriteLine($" {c.Radius}");
-                }
             }
-
+            circles.Clear();
         }
-        // Сделать поиск коэффицентов прямой!
+        // Сделать заранее заготовки для поиска центров окружностей, т.к поиск коэф затратен 
         public void Task4_2()
         {
             Console.WriteLine("Формирование запроса: Центры окружностей которые лежат на заданной прямой");
             Console.WriteLine("Задаётся прямая вида y = kx + b");
 
-            Console.Write("Введите угловой коэффицент k: ");
-            double k = Convert.ToDouble(Console.ReadLine());
-
-            Console.Write("Введите коэффицент b: ");
-            double b = Convert.ToDouble(Console.ReadLine());
-
-            List<Circle> circles = GenerateClassesCircle(100);
-            var CircleOnLine = circles.Where(c => c.CenterOnLine(k,b)).ToList();
-            if (CircleOnLine.Any())
+            List<Circle> circles = new List<Circle>
             {
-                Console.WriteLine("Найденые окружности: ");
-                foreach (var circle in CircleOnLine)
+                new Circle (5,6,12),
+                new Circle (5,6,12),
+                new Circle (5,1,4),
+                new Circle (5,2,4),
+                new Circle (6,5,6)
+            };
+
+            var results = new List<(double k, double b, List<Circle> circlesOnLine)>();
+
+            for (int i = 0; i < circles.Count; i++)
+            {
+                for (int j = 0; j < circles.Count; j++)
                 {
-                    Console.WriteLine($"Центр: {circle.CenterX}, {circle.CenterY}, Радиус: {circle.Radius}");
+                    var c1 = circles[i];
+                    var c2 = circles[j];
+                    double deltaX = c2.CenterX - c1.CenterX;
+                    if (Math.Abs(deltaX) < 1e-9) continue;
+                    double k = (c2.CenterY - c1.CenterY) / deltaX;
+                    double b = c1.CenterY - k * c1.CenterX;
+
+                    var circleOnLine = circles.Where(c => c.CenterOnLine(k, b)).ToList();
+                    if (circleOnLine.Count > 2)
+                    {
+                        results.Add((k, b, circleOnLine));
+                    }
                 }
             }
-            else 
+            if (results.Any())
             {
-                Console.WriteLine("Окружности не найдены.");
+                foreach (var res in results)
+                {
+                    Console.WriteLine($"Прямая y = {res.k}x + {res.b}");
+                    Console.WriteLine("Центры окружностей: ");
+                    foreach (var circ in res.circlesOnLine)
+                    {
+                        Console.WriteLine($"{circ.CenterX}, {circ.CenterY}");
+                    }
+                    Console.WriteLine();
+                }
             }
+            else
+            {
+                Console.WriteLine("Не найденно прямой на которой лежат центры окружности");
+            }
+
+            circles.Clear();
+            results.Clear();
         }
         public void PrintInfo()
         {
@@ -179,6 +209,7 @@ namespace Praktika_4
                 Console.WriteLine(i.Radius);
             }
             Console.WriteLine("------------------------");
+            circles.Clear();
         }
         public void Task4_3()
         {
@@ -191,6 +222,12 @@ namespace Praktika_4
             }
             Console.WriteLine($"Наибольший периметр окружности -> {circ.Max()}");
             Console.WriteLine($"Наименьший периметр окружности -> {circ.Min()}");
+
+
+
+            circles.Clear();
+            circ.Clear();
+
         }
         public void Task4_4()
         {
@@ -211,16 +248,37 @@ namespace Praktika_4
                 }
             }
             Console.WriteLine($"Найдено {rad} окружностей");
+            
+            circles.Clear();
         }
         public void Task4_5()
         {
             var circles = GenerateClassesCircle(5);
             Console.WriteLine($"Координаты центра -> X:{circles[0].CenterX}, Y:{circles[0].CenterY}");
             Console.WriteLine($"Радиус: {circles[0].Radius}");
+            circles.Clear();
         }
         public void Task4_6()
         {
-            
+            List <Circle> circles = GenerateClassesCircle(100);
+
+            var circleInFirstQuadrant = circles
+                .Where(c => c.CenterX > 0 && c.CenterY > 0)
+                .ToList();
+            Console.WriteLine("Запрос: Найти окружности которые лежат в первой четверти координат");
+            Console.WriteLine("Найденные окружности:");
+            if (circleInFirstQuadrant.Any())
+            {
+                foreach (var c in circleInFirstQuadrant)
+                {
+                    Console.WriteLine($"Центр: {c.CenterX}, {c.CenterY}, Радиус: {c.Radius}");
+                }
+            }
+            else 
+            {
+                Console.WriteLine("Окружности не найдены!");
+            }
+            circles.Clear();
         }
         public void Task4_7()
         {
@@ -233,6 +291,7 @@ namespace Praktika_4
             {
                 Console.WriteLine(s.Radius);
             }
+            circles.Clear();
         }
     }
     internal class Praktika_4
@@ -243,9 +302,9 @@ namespace Praktika_4
             Task4 task4 = new Task4();
             //circle.PrintInfo();
             //task1.Task_1();
-            //task4.GenerateClassesCircle(100);
+            //task4.GenerateClassesCircle(10000);
             //task4.Task4_1();
-            task4.Task4_6();
+            task4.Task4_7();
         }
     }
 }
